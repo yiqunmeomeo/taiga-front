@@ -94,7 +94,11 @@ body {
     min-height: 100vh;
     min-width: 0;
     padding: 1rem;
+    transition: all .2s ease-in;
     width: 320px;
+    &.sort-active {
+        background: darken($whitish, 5%);
+    }
     &.filters-bar {
         flex: 0 0 auto;
         padding: 0;

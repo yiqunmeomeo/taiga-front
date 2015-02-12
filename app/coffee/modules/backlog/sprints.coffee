@@ -35,20 +35,12 @@ BacklogSprintDirective = ($repo, $rootscope) ->
         easing: 'linear'
     }
 
-    refreshSprintTableHeight = (sprintTable) =>
-        if !sprintTable.find(".row").length
-            sprintTable.css("height", sprintTableMinHeight)
-        else
-            sprintTable.css("height", "auto")
-
     toggleSprint = ($el) =>
         sprintTable = $el.find(".sprint-table")
         sprintArrow = $el.find(".icon-arrow-up")
 
         sprintArrow.toggleClass('active')
         sprintTable.toggleClass('open')
-
-        refreshSprintTableHeight(sprintTable)
 
     link = ($scope, $el, $attrs) ->
         $scope.$watch $attrs.tgBacklogSprint, (sprint) ->
@@ -58,6 +50,7 @@ BacklogSprintDirective = ($repo, $rootscope) ->
                 $el.addClass("sprint-closed")
             else
                 toggleSprint($el)
+
 
         # Event Handlers
         $el.on "click", ".sprint-name > .icon-arrow-up", (event) ->

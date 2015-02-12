@@ -138,6 +138,13 @@
         }
     }
     .sprint-table {
+        .sprint-help {
+            .title {
+                @extend %large;
+                color: $gray;
+                margin-bottom: .5rem;
+            }
+        }
         .row {
             border-bottom: 1px solid $gray-light;
             display: flex;

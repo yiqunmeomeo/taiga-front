@@ -121,6 +121,11 @@ BacklogSortableDirective = ($repo, $rs, $rootscope, $tgConfirm) ->
 
             $el.on "sortstart", (event, ui) ->
                 ui.item.find('a').addClass('noclick')
+                $('.menu-secondary').addClass('sort-active');
+
+            $el.on "sortstop", (event, ui) ->
+                $('.menu-secondary').removeClass('sort-active');
+
 
         $scope.$on "$destroy", ->
             $el.off()
