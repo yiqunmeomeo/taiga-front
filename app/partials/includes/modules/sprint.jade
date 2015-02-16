@@ -2,11 +2,12 @@ header(tg-backlog-sprint-header, ng-model="sprint")
 
 div.sprint-progress-bar(tg-progress-bar="100 * sprint.closed_points / sprint.total_points")
 
+div.sprint-help.empty(ng-hide="sprint.user_stories.length")
+    span.icon.icon-move
+    p.title Your sprint is empty!
+    p Drag some user stories here!
+
 div.sprint-table
-    div.sprint-help.empty(ng-hide="sprint.user_stories.length")
-        span.icon.icon-move
-        p.title Your sprint is empty!
-        p Drag some user stories here!
     div.row.milestone-us-item-row(ng-repeat="us in sprint.user_stories track by us.id")
         div.column-us
             a.us-name.clickable(tg-nav="project-userstories-detail:project=project.slug,ref=us.ref",
@@ -18,6 +19,6 @@ div.sprint-table
 
 a.button.button-gray(tg-bo-title="'Go to Taskboard of ' + sprint.name",
                      tg-nav="project-taskboard:project=project.slug,sprint=sprint.slug",
-                     tg-check-permission="view_milestones")
+                     tg-check-permission="view_milestones", ng-show="sprint.user_stories.length")
 
     span Sprint Taskboard

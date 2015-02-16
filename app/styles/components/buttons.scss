@@ -104,7 +104,8 @@ a.button-bulk {
     @extend %button;
     background: $grayer;
     vertical-align: middle;
-    .icon, img {
+    .icon,
+    img {
         @extend %large;
         color: $white;
         margin-right: .5rem;

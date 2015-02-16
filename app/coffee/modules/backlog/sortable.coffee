@@ -62,7 +62,8 @@ BacklogSortableDirective = ($repo, $rs, $rootscope, $tgConfirm) ->
                 connectWith: ".sprint"
                 containment: ".wrapper"
                 dropOnEmpty: true
-                placeholder: "row us-item-row us-item-drag sortable-placeholder"
+                placeholder: 'sortable-placeholder'
+
                 scroll: true
                 # A consequence of length of backlog user story item
                 # the default tolerance ("intersection") not works properly.
