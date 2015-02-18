@@ -221,7 +221,8 @@
 
 // If sprint is closed and date is old
 .sprint-closed {
-    .sprint-table {
+    .sprint-table,
+    .sprint-help {
         display: none;
     }
     .number,

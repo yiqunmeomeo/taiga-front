@@ -23,6 +23,7 @@ taiga = @.taiga
 
 module = angular.module("taigaBacklog")
 
+bindOnce = @.taiga.bindOnce
 
 #############################################################################
 ## Sprint Actions Directive
@@ -35,28 +36,31 @@ BacklogSprintDirective = ($repo, $rootscope) ->
         easing: 'linear'
     }
 
-    toggleSprint = ($el) =>
-        sprintTable = $el.find(".sprint-table")
-        sprintArrow = $el.find(".icon-arrow-up")
-
-        sprintArrow.toggleClass('active')
-        sprintTable.toggleClass('open')
-
     link = ($scope, $el, $attrs) ->
-        $scope.$watch $attrs.tgBacklogSprint, (sprint) ->
+        $scope.closedSprint = false
+
+        toggleSprint = () =>
+            $el.find(".sprint-table").slideToggle(slideOptions)
+            $el.find(".sprint-help").toggle()
+
+            #toggle closed sprint state
+            $scope.closedSprint = !$scope.closedSprint
+
+        $scope.$on "sprintsortable:over", () ->
+            if $scope.closedSprint
+                $scope.$apply toggleSprint
+
+        $attrs.$observe "tgBacklogSprint", () ->
             sprint = $scope.$eval($attrs.tgBacklogSprint)
 
             if sprint.closed
                 $el.addClass("sprint-closed")
-            else
-                toggleSprint($el)
 
+            $scope.closedSprint = sprint.closed
 
         # Event Handlers
         $el.on "click", ".sprint-name > .icon-arrow-up", (event) ->
-            toggleSprint($el)
-
-            $el.find(".sprint-table").slideToggle(slideOptions)
+            $scope.$apply () => toggleSprint()
 
         $el.on "click", ".sprint-name > .icon-edit", (event) ->
             event.preventDefault()
@@ -67,7 +71,10 @@ BacklogSprintDirective = ($repo, $rootscope) ->
         $scope.$on "$destroy", ->
             $el.off()
 
-    return {link: link}
+    return {
+        link: link,
+        scope: true
+    }
 
 module.directive("tgBacklogSprint", ["$tgRepo", "$rootScope", BacklogSprintDirective])
 
@@ -79,14 +86,14 @@ module.directive("tgBacklogSprint", ["$tgRepo", "$rootScope", BacklogSprintDirec
 BacklogSprintHeaderDirective = ($navUrls, $template) ->
     template = $template.get("backlog/sprint-header.html", true)
 
-    link = ($scope, $el, $attrs, $model) ->
+    link = ($scope, $el, $attrs) ->
         isEditable = ->
             return $scope.project.my_permissions.indexOf("modify_milestone") != -1
 
         isVisible = ->
             return $scope.project.my_permissions.indexOf("view_milestones") != -1
 
-        render = (sprint) ->
+        render = (sprint, closedSprint) ->
             taskboardUrl = $navUrls.resolve("project-taskboard",
                                             {project: $scope.project.slug, sprint: sprint.slug})
 
@@ -102,12 +109,16 @@ BacklogSprintHeaderDirective = ($navUrls, $template) ->
                 totalPoints: sprint.total_points or 0
                 isVisible: isVisible()
                 isEditable: isEditable()
+                closed: closedSprint
             }
+
             $el.html(template(ctx))
 
+        $scope.$watch 'sprint', (sprint) ->
+            render($scope.sprint, $scope.closedSprint)
 
-        $scope.$watch $attrs.ngModel, (sprint) ->
-            render(sprint)
+        $scope.$watch 'closedSprint', (closedSprint) ->
+            render($scope.sprint, $scope.closedSprint)
 
         $scope.$on "sprintform:edit:success", ->
             render($model.$modelValue)
@@ -118,7 +129,6 @@ BacklogSprintHeaderDirective = ($navUrls, $template) ->
     return {
         link: link
         restrict: "EA"
-        require: "ngModel"
     }
 
 module.directive("tgBacklogSprintHeader", ["$tgNavUrls", "$tgTemplate", BacklogSprintHeaderDirective])

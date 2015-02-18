@@ -172,6 +172,8 @@ SprintSortableDirective = ($repo, $rs, $rootscope) ->
                     dropOnEmpty: true
                     items: ".sprint-table .milestone-us-item-row",
                     connectWith: ".sprint,.backlog-table-body,.empty-backlog"
+                    over: () =>
+                        $scope.$broadcast("sprintsortable:over")
                 })
 
                 $el.on "multiplesortreceive", (event, ui) ->
@@ -210,7 +212,9 @@ SprintSortableDirective = ($repo, $rs, $rootscope) ->
                 $el.on "sortstart", (event, ui) ->
                     ui.item.find('a').addClass('noclick')
 
-    return {link:link}
+    return {
+        link:link
+    }
 
 
 module.directive("tgBacklogSortable", [
