@@ -139,7 +139,7 @@ configure = ($routeProvider, $locationProvider, $httpProvider, $provide, $tgEven
 
     # User profile
     $routeProvider.when("/profile",
-     {templateUrl: "profile/public-profile.html"})
+     {templateUrl: "profile/profile.html"})
 
     # Auth
     $routeProvider.when("/login",
