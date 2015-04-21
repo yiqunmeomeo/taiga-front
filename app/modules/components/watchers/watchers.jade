@@ -1,0 +1,22 @@
+div
+    .watchers-header(
+        ng-show="isEditable() || watchers.length > 0",
+        ng-class="{'no-watchers': isEditable() && watchers.length == 0}")
+
+        span.title(ng-bind="getTitle()")
+
+        a.icon.icon-plus.add-watcher(ng-show="isEditable()",
+            href="",
+            ng-click="addWatcher(watched)",
+            tg-bo-title="getTitle()")
+
+    .watcher-single(ng-repeat="watcher in watchers")
+        .watcher-avatar
+            img(src="{{ watcher.photo }}" alt="{{ watcher.full_name_display }}")
+        .watcher-name
+            span {{ watcher.full_name_display }}
+
+            a.icon.icon-delete(ng-show="isEditable()",
+                ng-click="deleteWatcher(watcher)"
+                href="",
+                title="{{'WATCHERS.DELETE' | translate}}")

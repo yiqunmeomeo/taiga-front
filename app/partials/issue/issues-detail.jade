@@ -55,7 +55,7 @@ div.wrapper(ng-controller="IssueDetailController as ctrl",
 
         section.duty-assigned-to(tg-assigned-to, ng-model="issue", required-perm="modify_issue")
 
-        section.watchers(tg-watchers, ng-model="issue", required-perm="modify_issue")
+        section.watchers(tg-watchers="issue", project="project", users-by-id="usersById", required-perm="modify_issue")
 
         section.us-detail-settings
            tg-promote-issue-to-us-button(tg-check-permission="add_us", ng-model="issue")
