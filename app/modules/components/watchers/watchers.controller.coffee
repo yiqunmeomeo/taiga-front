@@ -15,11 +15,15 @@ class Watchers extends mixOf(taiga.Controller)
     isEditable: (project, requiredPerm) ->
         return project?.my_permissions?.indexOf(requiredPerm) != -1
 
-    saveWatchers: @qqueue.bindAdd (watched, watchers) ->
+    saveWatchers: (watched, watchers) ->
+        console.log "SAVE WATCHER"
+        #TODO: fix this
+        #@qqueue.bindAdd (watched, watchers) ->
         watched.watchers = watchers
         promise = @repo.save(watched)
         promise.then ->
             @confirm.notify("success")
+            #TODO: machaca el scope?
             @.watchers = _.map(watchers, (watcherId) -> @.usersById[watcherId])
             @rootscope.$broadcast("history:reload")
 
@@ -27,8 +31,8 @@ class Watchers extends mixOf(taiga.Controller)
             watched.revert()
 
     deleteWatcher: (watched, watcher, usersById) ->
-        title = @translate.instant("COMMON.WATCHERS.DELETE")
-        message = @.usersById[watcher.id].full_name_display
+        title = @.translate.instant("COMMON.WATCHERS.DELETE")
+        message = usersById[watcher.id].full_name_display
 
         @confirm.askOnDelete(title, message)
         .then @qqueue.bindAdd  (finish) ->
@@ -36,7 +40,8 @@ class Watchers extends mixOf(taiga.Controller)
                 finish()
                 watchers = _.clone(watched.watchers, false)
                 watchers = _.pull(watchers, watcher.id)
-                @.watched.watchers = watchers
+                watched.watchers = watchers
+                #TODO: machaca el scope?
                 @.watchers = _.map(watchers, (watcherId) -> usersById[watcherId])
                 return @repo.save(watched)
 
@@ -48,13 +53,8 @@ class Watchers extends mixOf(taiga.Controller)
             watcher.revert()
             @confirm.notify("error")
 
-    getTitle: (project, requiredPerm, watchers) ->
-        if @.isEditable(project, requiredPerm) and watchers?.length == 0
-            return @translate.instant("COMMON.WATCHERS.ADD")
-        else
-            return @translate.instant("COMMON.WATCHERS.TITLE")
-
     addWatcher: (watched) ->
         @rootscope.$broadcast("watcher:add", watched)
+
 
 angular.module("taigaComponents").controller("Watchers", Watchers)
