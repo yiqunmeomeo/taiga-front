@@ -282,3 +282,12 @@ Capslock = ($translate) ->
     return {link:link}
 
 module.directive("tgCapslock", ["$translate", Capslock])
+
+ImageOnLoad = () ->
+    return {
+        restrict: 'A',
+        link: (scope, element, attrs) ->
+            element.bind 'load', () -> scope.$apply(attrs.tgImageOnLoad)
+    }
+
+module.directive("tgImageOnLoad", [ImageOnLoad])

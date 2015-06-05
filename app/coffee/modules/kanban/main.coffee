@@ -405,10 +405,17 @@ module.directive("tgKanbanArchivedStatusIntro", ["$translate", KanbanArchivedSta
 #############################################################################
 
 KanbanUserstoryDirective = ($rootscope, $loading, $rs) ->
+    getImages = (attachments) ->
+        return _.filter attachments, (attachment) -> taiga.isImage(attachment.attached_file)
+
     link = ($scope, $el, $attrs, $model) ->
         $el.disableSelection()
 
         $scope.$watch "us", (us) ->
+            $rs.attachments.list("attachments/us", us.id, us.project).then (attachments) =>
+                images = getImages(attachments)
+                $scope.images = _.sortBy(images, "order")
+
             if us.is_blocked and not $el.hasClass("blocked")
                 $el.addClass("blocked")
             else if not us.is_blocked and $el.hasClass("blocked")
@@ -441,6 +448,53 @@ KanbanUserstoryDirective = ($rootscope, $loading, $rs) ->
     }
 
 module.directive("tgKanbanUserstory", ["$rootScope", "$tgLoading", "$tgResources", KanbanUserstoryDirective])
+
+#############################################################################
+##
+#############################################################################
+
+MiniImageGalleryDirective = ($timeout) ->
+    link = ($scope, $el) ->
+        $scope.images = []
+        $scope.currentImage = null
+        $scope.loading = true
+
+        currentImageIndex = 0
+        timeout = null
+
+        $scope.kk = () ->
+            $scope.loading = false
+
+            $timeout.cancel(timeout)
+
+        $scope.next = () ->
+            timeout = $timeout (
+                () -> $scope.loading = true
+            ), 200
+
+            currentImageIndex++
+
+            if currentImageIndex == $scope.images.length
+                currentImageIndex = 0
+
+            $scope.currentImage = $scope.images[currentImageIndex]
+
+        $scope.$watch "images", (images) ->
+            return if !images
+
+            currentImageIndex = 0
+            $scope.currentImage = $scope.images[currentImageIndex]
+
+    return {
+        templateUrl: "common/mini-gallery.html",
+        link: link,
+        scope: {
+            images: "="
+        }
+    }
+
+module.directive("tgMiniImageGallery", ["$timeout", MiniImageGalleryDirective])
+
 
 #############################################################################
 ## Kanban Squish Column Directive

@@ -1,0 +1,6 @@
+div.task-attachments(ng-if="images.length")
+  div.attachment.active(ng-click="next()")
+    div.loading(ng-show="loading")
+      img.loading-spinner(src='/svg/spinner-circle.svg')
+
+    img(ng-src="{{currentImage.url}}", alt="{{currentImage.filename }}", tg-image-on-load="kk()")
