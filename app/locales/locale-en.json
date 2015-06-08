@@ -567,7 +567,6 @@
         },
         "SECTION": {
             "SEARCH": "Search",
-            "TIMELINE": "Timeline",
             "BACKLOG": "Backlog",
             "KANBAN": "Kanban",
             "ISSUES": "Issues",

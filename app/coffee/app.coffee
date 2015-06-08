@@ -66,7 +66,6 @@ configure = ($routeProvider, $locationProvider, $httpProvider, $provide, $tgEven
             loader: true,
             controller: "Project",
             controllerAs: "vm"
-            section: "project-timeline"
         }
     )
 
