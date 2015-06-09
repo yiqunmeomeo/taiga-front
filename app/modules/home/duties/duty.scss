@@ -20,6 +20,13 @@
             display: flex;
             flex-direction: row;
         }
+        &:hover {
+            .duty-type-image {
+                // scss-lint:disable ImportantRule
+                background-color: rgba($green-taiga, .6) !important;
+                transition: all .3s;
+            }
+        }
     }
     .duty-type-image {
         background-blend-mode: overlay;
