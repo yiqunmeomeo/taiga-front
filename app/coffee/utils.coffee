@@ -192,6 +192,9 @@ _.mixin
                 delete obj[key]; obj
             , obj).value()
 
+isImage = (name) ->
+    return name.match(/\.(jpe?g|png|gif|gifv|webm)/i) != null
+
 taiga = @.taiga
 taiga.nl2br = nl2br
 taiga.bindMethods = bindMethods
@@ -215,3 +218,4 @@ taiga.sizeFormat = sizeFormat
 taiga.stripTags = stripTags
 taiga.replaceTags = replaceTags
 taiga.defineImmutableProperty = defineImmutableProperty
+taiga.isImage = isImage

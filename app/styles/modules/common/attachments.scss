@@ -27,6 +27,10 @@
             transition: color .2s ease-in;
         }
     }
+    label {
+        border: 0;
+        padding: 0;
+    }
 }
 
 .single-attachment {
@@ -130,6 +134,7 @@
         }
     }
     .editable-attachment-deprecated {
+        display: flex;
         padding-left: 1rem;
         span {
             color: $gray-light;

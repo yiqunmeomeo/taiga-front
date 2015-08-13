@@ -431,7 +431,7 @@ gulp.task("jslibs-deploy", function() {
         .pipe(gulp.dest(paths.dist + "js/"));
 });
 
-gulp.task("app-watch", ["coffee-lint", "coffee", "conf", "locales", "app-loader"]);
+gulp.task("app-watch", ["coffee", "conf", "locales", "app-loader"]);
 
 gulp.task("app-deploy", ["coffee", "conf", "locales", "app-loader"], function() {
     return gulp.src(paths.dist)

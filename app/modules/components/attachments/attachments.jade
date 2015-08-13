@@ -1,0 +1,21 @@
+section.attachmenst
+    .attachments-header
+        h3.attachments-title
+            span.attachments-num {{vm.attachments.size}}
+            span.attachments-text(translate="ATTACHMENT.SECTION_NAME")
+
+        .add-attach(title!="{{'ATTACHMENT.ADD' | translate}}")
+            span.size-info(translate="ATTACHMENT.MAX_FILE_SIZE", translate-values="{ 'maxFileSize': vm.maxFileSizeFormated}", ng-if="vm.maxFileSize")
+            label.icon.icon-plus(for="add-attach")
+            input(id="add-attach", type="file", multiple="multiple", ng-model="files" tg-file-change="vm.addAttachments(files)")
+
+    .attachment-body
+        .single-attachment(tg-repeat="attachment in vm.attachments track by $index")
+            .attachment-name
+                span.icon.icon-documents
+                span {{attachment.get('name')}}
+            .attachment-size
+                span {{attachment.get('size') | sizeFormat}}
+
+            .attachment-settings
+                a.settings.icon.icon-delete(href="#", title="{{'COMMON.DELETE' | translate}}", ng-click="vm.deleteAttachment(attachment)")

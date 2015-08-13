@@ -536,10 +536,12 @@ class BacklogController extends mixOf(taiga.Controller, taiga.PageMixin, taiga.F
             .timeout(200)
             .start()
 
-        @rs.userstories.getByRef(projectId, ref).then (us) =>
-            @rootscope.$broadcast("usform:edit", us)
+        urlname = "attachments/us"
 
-            currentLoading.finish()
+        return @rs.userstories.getByRef(projectId, ref).then (us) =>
+            @rs.attachments.list(urlname, us.id, projectId).then (attachments) =>
+                @rootscope.$broadcast("usform:edit", us, attachments)
+                currentLoading.finish()
 
     deleteUserStory: (us) ->
         title = @translate.instant("US.TITLE_DELETE_ACTION")

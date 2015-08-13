@@ -31,6 +31,11 @@ resourceProvider = ($rootScope, $config, $urls, $model, $repo, $auth, $q) ->
         params = {object_id: objectId, project: projectId}
         return $repo.queryMany(urlName, params)
 
+    service.delete = (urlName, attachment) ->
+        model = $model.make_model(urlName, attachment)
+
+        return $repo.remove(model)
+
     service.create = (urlName, projectId, objectId, file) ->
         defered = $q.defer()
 
