@@ -71,7 +71,7 @@ describe('User story detail', function(){
 
     it('block', utils.detail.blockTesting);
 
-    it('attachments', utils.detail.attachmentTesting);
+    utils.common.browserSkip(['safari'], utils.detail.attachmentTesting);
 
     describe('custom-fields', utils.detail.customFields.bind(this, 0));
 

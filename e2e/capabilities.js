@@ -78,7 +78,7 @@ module.exports = browser.getCapabilities().then(function(s) {
     };
 
     browser.inWindows = function() {
-        return /^WIN|XP/.test(platform);
+        return /^WIN|Win|XP/.test(platform);
     };
 
     browser.inOSX = function() {

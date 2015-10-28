@@ -49,7 +49,7 @@ describe('Task detail', function(){
 
     it('block', utils.detail.blockTesting);
 
-    it('attachments', utils.detail.attachmentTesting);
+    utils.common.browserSkip(['safari'], 'attachments', utils.detail.attachmentTesting);
 
     describe('custom-fields', utils.detail.customFields.bind(this, 1));
 

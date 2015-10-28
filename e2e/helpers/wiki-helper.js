@@ -10,8 +10,7 @@ helper.links = function() {
 
         addLink: async function(pageTitle){
             el.$(".add-button").click();
-            el.$(".new input").sendKeys(pageTitle);
-            browser.actions().sendKeys(protractor.Key.ENTER).perform();
+            el.$(".new input").sendKeys(pageTitle).sendKeys(protractor.Key.ENTER);
             await browser.waitForAngular();
             let newLink = await el.$$(".wiki-link a").last();
             return newLink;
@@ -37,6 +36,7 @@ helper.editor = function(){
 
     let obj = {
         el: el,
+        textArea: el.$("textarea"),
 
         enabledEditionMode: async function(){
             await el.$("section[tg-editable-wiki-content] .view-wiki-content").click();

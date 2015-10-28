@@ -68,7 +68,7 @@ describe('wiki', function() {
         await utils.common.takeScreenshot("wiki", "home-edition");
     });
 
-    it('attachments', utils.detail.attachmentTesting);
+    utils.common.browserSkip(['safari'], 'attachments', utils.detail.attachmentTesting);
 
     it('delete', async function() {
         await wikiHelper.editor().delete();
@@ -80,22 +80,22 @@ describe('wiki', function() {
         wikiHelper.editor().enabledEditionMode();
 
         wikiHelper.editor().setText("- aa");
-        browser.actions().sendKeys(protractor.Key.ENTER).perform();
+        wikiHelper.editor().textArea.sendKeys(protractor.Key.ENTER);
         let text = await wikiHelper.editor().getText();
         expect(text).to.be.equal("- aa\n- ");
 
         wikiHelper.editor().setText("- ");
-        browser.actions().sendKeys(protractor.Key.ENTER).perform();
+        wikiHelper.editor().textArea.sendKeys(protractor.Key.ENTER);
         text = await wikiHelper.editor().getText();
         expect(text).to.be.equal("\n");
 
         wikiHelper.editor().setText("- bbcc");
-        browser.actions().sendKeys(protractor.Key.ARROW_LEFT).sendKeys(protractor.Key.ARROW_LEFT).sendKeys(protractor.Key.ENTER).perform();
+        wikiHelper.editor().textArea.sendKeys(protractor.Key.ARROW_LEFT).sendKeys(protractor.Key.ARROW_LEFT).sendKeys(protractor.Key.ENTER);
         text = await wikiHelper.editor().getText();
         expect(text).to.be.equal("- bb\n- cc");
 
         wikiHelper.editor().setText("- aa");
-        browser.actions().sendKeys(protractor.Key.HOME).sendKeys(protractor.Key.ENTER).perform();
+        wikiHelper.editor().textArea.sendKeys(protractor.Key.HOME).sendKeys(protractor.Key.ENTER);
         text = await wikiHelper.editor().getText();
         expect(text).to.be.equal("\n- aa");
     });
