@@ -27,7 +27,7 @@ module = angular.module("taigaEvents", [])
 
 
 class EventsService
-    constructor: (@win, @log, @config, @auth) ->
+    constructor: (@win, @log, @config, @auth, @storage) ->
         bindMethods(@)
 
     initialize: (sessionId) ->
@@ -40,8 +40,60 @@ class EventsService
         if @win.WebSocket is undefined
             @log.info "WebSockets not supported on your browser"
 
+
+    testMessages: ->
+        ws = new @win.WebSocket('ws://localhost:8888')
+
+        messageBox = $('<div>').attr('id', 'message-box');
+        messageBox.prependTo('body')
+
+        clear = $('<a>').attr('href', '#').text('clear cache messages')
+
+        clear.on 'click', () =>
+            @storage.set('readed-messages', {list: []})
+
+        clear.appendTo(messageBox)
+
+        ws.addEventListener "message", (messages) =>
+            readed = @storage.get('readed-messages', {list: []})
+
+            messages = JSON.parse(messages.data)
+
+            console.log('new message', messages)
+
+            messages.forEach (message) =>
+                if readed.list.indexOf(message.id) != -1
+                    return
+
+                msg = $('<div>')
+
+                msg.css({
+                    'border': '1px solid red',
+                    'margin-bottom': '10px'
+                })
+
+                text = $('<p>').text(message.message)
+                read = $('<a>')
+
+                read
+                    .text("read")
+                    .attr('href', '#')
+                    .on 'click', (e) =>
+                        e.preventDefault()
+
+                        readed.list.push(message.id)
+
+                        @storage.set('readed-messages', readed)
+
+                        msg.remove()
+
+                msg.append(text, read)
+                msg.appendTo(messageBox)
+
     setupConnection: ->
         @.stopExistingConnection()
+
+        @.testMessages()
 
         url = @config.get("eventsUrl")
 
@@ -163,11 +215,11 @@ class EventsProvider
     setSessionId: (sessionId) ->
         @.sessionId = sessionId
 
-    $get: ($win, $log, $conf, $auth) ->
-        service = new EventsService($win, $log, $conf, $auth)
+    $get: ($win, $log, $conf, $auth, $storage) ->
+        service = new EventsService($win, $log, $conf, $auth, $storage)
         service.initialize(@.sessionId)
         return service
 
-    @.prototype.$get.$inject = ["$window", "$log", "$tgConfig", "$tgAuth"]
+    @.prototype.$get.$inject = ["$window", "$log", "$tgConfig", "$tgAuth", "$tgStorage"]
 
 module.provider("$tgEvents", EventsProvider)
