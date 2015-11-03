@@ -8,35 +8,39 @@
     background: $whitish;
     display: flex;
     justify-content: space-between;
-    padding: .5rem 1rem;
     .attachments-title {
         @extend %medium;
         @extend %bold;
         color: $grayer;
+        padding: 0 1rem;
     }
     .attachments-num,
     .attachments-text {
         margin-right: .1rem;
     }
-    .icon {
-        @extend %large;
-        color: $grayer;
-        cursor: pointer;
-        &:hover {
-            color: $primary;
-            transition: color .2s ease-in;
+    label {
+        &.add-attachment-button {
+            background: $grayer;
+            border: 0;
+            padding: .5rem;
+            transition: background .25s;
+            &:hover {
+                background: $primary-light;
+            }
         }
     }
-    label {
-        border: 0;
-        padding: 0;
+    svg {
+        fill: $white;
+        height: 1.25rem;
+        margin-bottom: -.2rem;
+        width: 1.25rem;
     }
 }
 
 .single-attachment {
     @extend %small;
     align-items: center;
-    border-bottom: 1px solid $whitish;
+    border-bottom: 1px solid $gray-light;
     display: flex;
     padding: .5rem 0 .5rem 1rem;
     position: relative;

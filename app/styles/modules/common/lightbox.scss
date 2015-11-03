@@ -18,9 +18,8 @@
     }
 
     textarea {
-        margin-bottom: 1rem;
-        max-height: 9rem;
-        min-height: 7rem;
+        max-height: 6rem;
+        min-height: 3rem;
         resize: vertical;
     }
     label {
@@ -46,7 +45,6 @@
     .settings {
         display: flex;
         justify-content: center;
-        margin-bottom: 1rem;
         fieldset {
             margin-right: .5rem;
             &:hover {
@@ -489,7 +487,7 @@
     .ticket-role-points {
         flex-grow: 1;
         flex-shrink: 1;
-        max-width: calc(100% * (1/5) - .2rem);
+        max-width: calc(100% * (1/6) - .2rem);
         &:first-child {
             margin-left: 0;
         }
@@ -498,6 +496,6 @@
         }
     }
     .points-per-role {
-        margin-bottom: 1rem;
+        margin-bottom: 0;
     }
 }
