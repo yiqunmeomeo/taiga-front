@@ -10,10 +10,12 @@ section.attachments
     .attachment-body
         .single-attachment(tg-repeat="attachment in vm.attachments track by $index")
             .attachment-name
-                span.icon.icon-documents
+                span.icon
+                    include ../../../svg/attachment.svg
                 span {{attachment.get('name')}}
             .attachment-size
                 span {{attachment.get('size') | sizeFormat}}
 
             .attachment-settings
-                a.settings.icon.icon-delete(href="#", title="{{'COMMON.DELETE' | translate}}", ng-click="vm.deleteAttachment(attachment)")
+                a.settings.attachment-delete(href="#", title="{{'COMMON.DELETE' | translate}}", ng-click="vm.deleteAttachment(attachment)")
+                    include ../../../svg/remove.svg

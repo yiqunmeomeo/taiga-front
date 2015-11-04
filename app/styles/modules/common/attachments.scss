@@ -20,7 +20,7 @@
     }
     label {
         &.add-attachment-button {
-            background: $grayer;
+            background: $gray;
             border: 0;
             padding: .5rem;
             transition: background .25s;
@@ -42,8 +42,11 @@
     align-items: center;
     border-bottom: 1px solid $gray-light;
     display: flex;
-    padding: .5rem 0 .5rem 1rem;
+    padding: .5rem 0 .5rem .5rem;
     position: relative;
+    &:last-child {
+        border-bottom: 0;
+    }
     &:hover {
         .attachment-settings {
             .settings {
@@ -69,12 +72,16 @@
     }
     .attachment-name {
         @extend %bold;
-        @include ellipsis(200px);
+        @include ellipsis(35%);
         flex-basis: 35%;
-        flex-grow: 1;
+        max-width: 35%;
         padding-right: 1rem;
         .icon {
-            margin-right: .5rem;
+            margin-right: .25rem;
+        }
+        svg {
+            height: 1.2rem;
+            width: 1.2rem;
         }
     }
     .attachment-size {
@@ -96,7 +103,8 @@
     }
     .attachment-settings {
         flex-basis: 15%;
-        flex-grow: 1;
+        flex-grow: 0;
+        flex-shrink: 0;
         .settings,
         .editable-settings {
             @extend %large;
