@@ -1,14 +1,18 @@
 section.attachments
     .attachments-header
-        h3.attachments-title
-            span.attachments-num(tg-bind-html="ctrl.attachmentsCount")
-            span.attachments-text(translate="ATTACHMENT.SECTION_NAME")
-        .add-attach(tg-check-permission!="modify_<%- type %>", title!="{{'ATTACHMENT.ADD' | translate}}")
-            <% if (maxFileSize){ %>
-            span.size-info.hidden(translate="ATTACHMENT.MAX_FILE_SIZE", translate-values!="{ 'maxFileSize': '<%- maxFileSize %>'}")
-            <% }; %>
-            label(for="add-attach", class="icon icon-plus related-tasks-buttons")
-            input(id="add-attach", type="file", multiple="multiple")
+        h3.attachments-title #[span.attachments-num(tg-bind-html="ctrl.attachmentsCount")] #[span.attachments-text(translate="ATTACHMENT.SECTION_NAME")]
+        .options
+            button.view-gallery
+                include ../../svg/gallery.svg
+            button.view-list
+                include ../../svg/list.svg
+            .add-attach(tg-check-permission!="modify_<%- type %>", title!="{{'ATTACHMENT.ADD' | translate}}")
+                <% if (maxFileSize){ %>
+                span.size-info.hidden(translate="ATTACHMENT.MAX_FILE_SIZE", translate-values!="{ 'maxFileSize': '<%- maxFileSize %>'}")
+                <% }; %>
+                label.add-attachment-button(for="add-attach")
+                    include ../../svg/add.svg
+                input(id="add-attach", type="file", multiple="multiple")
 
     .attachment-body.sortable
         .single-attachment(ng-repeat="attach in ctrl.attachments|filter:ctrl.filterAttachments track by attach.id" tg-attachment="attach", tg-bind-scope)
