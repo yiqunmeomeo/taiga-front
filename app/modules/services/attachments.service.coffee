@@ -57,4 +57,7 @@ class AttachmentsService
     uploadUSAttachment: (attachment, obj) ->
         return @.upload(attachment, obj, 'us')
 
+    uploadIssueAttachment: (attachment, obj) ->
+        return @.upload(attachment, obj, 'issue')
+
 angular.module("taigaCommon").service("tgAttachmentsService", AttachmentsService)
