@@ -9,14 +9,14 @@ class AttachmentsService
         "$tgResources"
     ]
 
-    constructor: (@confirm, @config, @tranlsate, @q, @rs) ->
+    constructor: (@confirm, @config, @translate, @q, @rs) ->
         @.maxFileSize = @.getMaxFileSize()
 
         if @.maxFileSize
             @.maxFileSizeFormated = sizeFormat(@.maxFileSize)
 
     sizeError: (file) ->
-        message = @tranlsate.instant("ATTACHMENT.ERROR_MAX_SIZE_EXCEEDED", {
+        message = @translate.instant("ATTACHMENT.ERROR_MAX_SIZE_EXCEEDED", {
             fileName: file.name,
             fileSize: sizeFormat(file.size),
             maxFileSize: @.maxFileSizeFormated
@@ -41,7 +41,7 @@ class AttachmentsService
     upload: (attachment, obj, type) ->
         promise = @rs.attachments.create("attachments/" + type, obj.project, obj.id, attachment)
 
-        promise = promise.then null, (data) =>
+        promise.then null, (data) =>
             if data.status == 413
                 @.sizeError(attachment)
 
@@ -52,7 +52,7 @@ class AttachmentsService
 
                 return @q.reject(data)
 
-            return promise
+        return promise
 
     uploadUSAttachment: (attachment, obj) ->
         return @.upload(attachment, obj, 'us')

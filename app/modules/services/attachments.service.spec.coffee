@@ -17,7 +17,7 @@
 # File: attachments.service.spec.coffee
 ###
 
-describe.only "tgAttachmentsService", ->
+describe "tgAttachmentsService", ->
     attachmentsService = provide = null
     mocks = {}
 
@@ -126,14 +126,54 @@ describe.only "tgAttachmentsService", ->
 
         expect(mocks.rs.attachments.delete).to.have.been.calledWith('attachments/us', attachment)
 
-    it "upload", () ->
-        mocks.rs.attachments = {
-            create: sinon.stub().promise().resolve({
-                status: 413,
-                data: {
-                    _error_message: 'test test'
-                }
-            })
+     it "upload fail", (done) ->
+        attachment = {
+            id: 1
         }
 
-        mocks.rs.attachments.create('attachments/us', obj.project, obj.id, attachment)
+        obj = {
+            id: 1,
+            project: 2
+        }
+
+        mocks.rs.attachments = {
+            create: sinon.stub().promise()
+        }
+
+        mocks.rs.attachments.create.withArgs('attachments/us', obj.project, obj.id, attachment).resolve()
+
+        attachmentsService.sizeError = sinon.spy()
+
+        attachmentsService.upload(attachment, obj, 'us').then () ->
+            done()
+
+    # it.skip "upload fail", (done) ->
+    #     attachment = {
+    #         id: 1
+    #     }
+    #
+    #     obj = {
+    #         id: 1,
+    #         project: 2
+    #     }
+    #
+    #     mocks.translate.instant.withArgs('ATTACHMENT.ERROR_UPLOAD_ATTACHMENT').returns('message')
+    #
+    #     mocks.rs.attachments = {
+    #         create: sinon.stub().promise()
+    #     }
+    #
+    #     mocks.rs.attachments.create.withArgs('attachments/us', obj.project, obj.id, attachment).reject({
+    #         status: 413,
+    #         data: {
+    #             _error_message: 'test test'
+    #         }
+    #     })
+    #
+    #     attachmentsService.sizeError = sinon.spy()
+    #
+    #     attachmentsService.upload(attachment, obj, 'us').finally () ->
+    #         expect(attachmentsService.sizeError).to.have.been.calledWith(attachment)
+    #         expect(mocks.confirm.notify).to.have.been.calledWith('error', 'message')
+    #
+    #         done()
