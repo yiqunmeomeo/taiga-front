@@ -95,6 +95,26 @@
             display: none;
         }
     }
+    .attachments {
+        margin-bottom: 0;
+    }
+    .attachment-body {
+        max-height: 8rem;
+        overflow-y: auto;
+    }
+    .attachment-delete {
+        right: .5rem;
+        svg {
+            fill: $gray-light;
+            height: 1.25rem;
+            width: 1.25rem;
+        }
+        &:hover {
+            svg {
+                fill: $red;
+            }
+        }
+    }
 }
 
 .lightbox-generic-bulk {
@@ -495,25 +515,7 @@
             margin-right: 0;
         }
     }
-    .points-per-role,
-    .attachments {
+    .points-per-role {
         margin-bottom: 0;
-    }
-    .attachment-body {
-        max-height: 8rem;
-        overflow-y: auto;
-    }
-    .attachment-delete {
-        right: .5rem;
-        svg {
-            fill: $gray-light;
-            height: 1.25rem;
-            width: 1.25rem;
-        }
-        &:hover {
-            svg {
-                fill: $red;
-            }
-        }
     }
 }
