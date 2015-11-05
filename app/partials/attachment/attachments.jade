@@ -6,16 +6,30 @@ section.attachments
                 include ../../svg/gallery.svg
             button.view-list
                 include ../../svg/list.svg
-            .add-attach(tg-check-permission!="modify_<%- type %>", title!="{{'ATTACHMENT.ADD' | translate}}")
+            .add-attach(
+                tg-check-permission!="modify_<%- type %>"
+                title!="{{'ATTACHMENT.ADD' | translate}}"
+            )
                 <% if (maxFileSize){ %>
-                span.size-info.hidden(translate="ATTACHMENT.MAX_FILE_SIZE", translate-values!="{ 'maxFileSize': '<%- maxFileSize %>'}")
+                span.size-info.hidden(
+                    translate="ATTACHMENT.MAX_FILE_SIZE"
+                    translate-values!="{ 'maxFileSize': '<%- maxFileSize %>'}"
+                )
                 <% }; %>
                 label.add-attachment-button(for="add-attach")
                     include ../../svg/add.svg
-                input(id="add-attach", type="file", multiple="multiple")
+                input(
+                    id="add-attach"
+                    type="file"
+                    multiple="multiple"
+                )
 
-    .attachment-body.sortable
-        .single-attachment(ng-repeat="attach in ctrl.attachments|filter:ctrl.filterAttachments track by attach.id" tg-attachment="attach", tg-bind-scope)
+    .attachment-list.sortable
+        .single-attachment(
+            ng-repeat="attach in ctrl.attachments|filter:ctrl.filterAttachments track by attach.id"
+            tg-attachment="attach"
+            tg-bind-scope
+        )
 
         .single-attachment(ng-repeat="file in ctrl.uploadingAttachments")
             .attachment-name
@@ -26,9 +40,28 @@ section.attachments
                 span(ng-bind="file.progressMessage")
                 .percentage(ng-style="{'width': file.progressPercent}")
 
-        a.more-attachments(href="", title="{{'ATTACHMENT.SHOW_DEPRECATED' | translate}}", ng-if="ctrl.deprecatedAttachmentsCount > 0")
-            span.text(data-type="show", translate="ATTACHMENT.SHOW_DEPRECATED")
-            span.text.hidden(data-type="hide", translate="ATTACHMENT.HIDE_DEPRECATED")
-            span.more-attachments-num(translate="ATTACHMENT.COUNT_DEPRECATED", translate-values="{counter: '{{ctrl.deprecatedAttachmentsCount}}'}")
+        a.more-attachments(
+            href=""
+            title="{{'ATTACHMENT.SHOW_DEPRECATED' | translate}}"
+            ng-if="ctrl.deprecatedAttachmentsCount > 0"
+        )
+            span.text(
+                data-type="show"
+                translate="ATTACHMENT.SHOW_DEPRECATED"
+            )
+            span.text.hidden(
+                data-type="hide"
+                translate="ATTACHMENT.HIDE_DEPRECATED"
+            )
+            span.more-attachments-num(
+                translate="ATTACHMENT.COUNT_DEPRECATED"
+                translate-values="{counter: '{{ctrl.deprecatedAttachmentsCount}}'}"
+            )
+    .attachment-gallery
+        .single-attachment(
+            ng-repeat="attach in ctrl.attachments|filter:ctrl.filterAttachments track by attach.id"
+            tg-attachment="attach"
+            tg-bind-scope
+        )
 
     div.lightbox.lightbox-block(tg-lb-attachment-preview)
