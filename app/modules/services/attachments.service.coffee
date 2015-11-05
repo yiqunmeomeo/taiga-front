@@ -38,8 +38,8 @@ class AttachmentsService
     delete: (attachment, type) ->
         return @rs.attachments.delete("attachments/" + type, attachment)
 
-    upload: (attachment, obj, type) ->
-        promise = @rs.attachments.create("attachments/" + type, obj.project, obj.id, attachment)
+    upload: (attachment, objId, projectId, type) ->
+        promise = @rs.attachments.create("attachments/" + type, projectId, objId, attachment)
 
         promise.then null, (data) =>
             if data.status == 413
@@ -53,11 +53,5 @@ class AttachmentsService
                 return @q.reject(data)
 
         return promise
-
-    uploadUSAttachment: (attachment, obj) ->
-        return @.upload(attachment, obj, 'us')
-
-    uploadIssueAttachment: (attachment, obj) ->
-        return @.upload(attachment, obj, 'issue')
 
 angular.module("taigaCommon").service("tgAttachmentsService", AttachmentsService)

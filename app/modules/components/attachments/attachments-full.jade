@@ -1,7 +1,7 @@
 section.attachments
     .attachments-header
         h3.attachments-title
-            span.attachments-num {{vm.attachmentsAll.size}}
+            span.attachments-num {{vm.attachments.size}}
             span.attachments-text(translate="ATTACHMENT.SECTION_NAME")
 
         .add-attach(tg-check-permission="modify_us", title="{{'ATTACHMENT.ADD' | translate}}")
@@ -10,7 +10,7 @@ section.attachments
             input(id="add-attach", type="file", multiple="multiple", ng-model="files" tg-file-change="vm.addAttachments(files)")
 
     .attachment-body.sortable(tg-attachments-sortable="vm.reorderAttachment(attachment, index)")
-        div(tg-repeat="attachment in vm.attachments track by attachment.get('name')", tg-bind-scope)
+        div(tg-repeat="attachment in vm.attachments track by attachment.get('id')", tg-bind-scope)
           tg-attachment2(attachment="attachment",
             on-delete="vm.deleteAttachment(attachment)",
             on-update="vm.updateAttachment(attachment)")

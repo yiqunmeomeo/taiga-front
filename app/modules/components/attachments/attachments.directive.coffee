@@ -18,18 +18,22 @@ AttachmentsDirective.$inject = []
 
 angular.module("taigaComponents").directive("tgAttachmentsSimple", AttachmentsDirective)
 
+
+bindOnce = @.taiga.bindOnce
+
 AttachmentsLightboxCreateDirective = () ->
     link = (scope, el, attrs, ctrl) ->
-
-        scope.$watch 'vm.attachmentsAll', (attachments) ->
-            ctrl.generate() if attachments
+        bindOnce scope, 'vm.objId', (value) ->
+            ctrl.loadAttachments()
 
     return {
         scope: {},
         bindToController: {
-            attachmentsAll: "=attachments"
+            type: "@",
+            objId: "="
+            projectId: "="
         },
-        controller: "Attachments",
+        controller: "Attachments2",
         controllerAs: "vm",
         templateUrl: "components/attachments/attachments-full.html",
         link: link

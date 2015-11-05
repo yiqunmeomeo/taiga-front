@@ -23,16 +23,8 @@ class AttachmentsController
     ]
 
     constructor: (@attachmentsService) ->
-        @.deprecatedsVisible = false
         @.maxFileSize = @attachmentsService.maxFileSize
         @.maxFileSizeFormated = @attachmentsService.maxFileSizeFormated
-
-    generate: () ->
-        @.deprecatedsCount = @.attachments.count (it) -> it.get('is_deprecated')
-
-    toggleDeprecatedsVisible: () ->
-        @.deprecatedsVisible = !@.deprecatedsVisible
-        @.generate()
 
     addAttachment: (file) ->
         attachment = Immutable.fromJS({
@@ -46,6 +38,56 @@ class AttachmentsController
 
             if @.onAdd
                 @.onAdd({attachment: attachment})
+
+    addAttachments: (files) ->
+        _.forEach files, @.addAttachment.bind(this)
+
+    deleteAttachment: (toDeleteAttachment) ->
+        @.attachments = @.attachments.filter (attachment) -> attachment != toDeleteAttachment
+
+        if @.onDelete
+            @.onDelete({attachment: toDeleteAttachment})
+
+angular.module("taigaComponents").controller("Attachments", AttachmentsController)
+
+
+class AttachmentsController2
+    @.$inject = [
+        "tgAttachmentsService",
+        "$tgResources"
+    ]
+
+    constructor: (@attachmentsService, @rs) ->
+        @.deprecatedsVisible = false
+        @.maxFileSize = @attachmentsService.maxFileSize
+        @.maxFileSizeFormated = @attachmentsService.maxFileSizeFormated
+
+    loadAttachments: ->
+        urlname = "attachments/#{@.type}"
+
+        # move to new resources
+        return @rs.attachments.list(urlname, @.objId, @.projectId).then (attachments) =>
+            attachments = _.sortBy(attachments, "order")
+            attachments = _.map attachments, (attachment) -> attachment._attrs
+
+            @.attachments = Immutable.fromJS(attachments)
+
+            return attachments
+
+    generate: () ->
+        @.deprecatedsCount = @.attachments.count (it) -> it.get('is_deprecated')
+
+    toggleDeprecatedsVisible: () ->
+        @.deprecatedsVisible = !@.deprecatedsVisible
+        @.generate()
+
+    addAttachment: (file) ->
+        if @attachmentsService.validate(file)
+            promise = @attachmentsService.upload(file, @.objId, @.projectId, @.type)
+
+            promise.then (attachment) =>
+                attachment = Immutable.fromJS(attachment._attrs)
+                @.attachments = @.attachments.push(attachment)
 
     addAttachments: (files) ->
         _.forEach files, @.addAttachment.bind(this)
@@ -71,4 +113,4 @@ class AttachmentsController
 
         @.attachments = @.attachments.update index, () -> toUpdateAttachment
 
-angular.module("taigaComponents").controller("Attachments", AttachmentsController)
+angular.module("taigaComponents").controller("Attachments2", AttachmentsController2)
