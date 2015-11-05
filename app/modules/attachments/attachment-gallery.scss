@@ -1,0 +1,17 @@
+.attachment-gallery {
+    display: flex;
+    .single-attachment {
+        padding: .5rem;
+        img {
+            width: 100%;
+        }
+        &.deprecated {
+            img {
+                opacity: .5;
+            }
+            .attachment-name {
+                color: $gray-light;
+            }
+        }
+    }
+}

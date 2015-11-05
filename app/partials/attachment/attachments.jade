@@ -2,9 +2,9 @@ section.attachments
     .attachments-header
         h3.attachments-title #[span.attachments-num(tg-bind-html="ctrl.attachmentsCount")] #[span.attachments-text(translate="ATTACHMENT.SECTION_NAME")]
         .options
-            button.view-gallery
+            button.view-gallery(ng-if="ctrl.attachments.length")
                 include ../../svg/gallery.svg
-            button.view-list
+            button.view-list(ng-if="ctrl.attachments.length")
                 include ../../svg/list.svg
             .add-attach(
                 tg-check-permission!="modify_<%- type %>"
