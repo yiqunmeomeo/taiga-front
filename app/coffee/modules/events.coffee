@@ -37,6 +37,9 @@ class EventsService
         @.error = false
         @.pendingMessages = []
 
+        @.missedHeartbeats = 0
+        @.heartbeatInterval = null
+
         if @win.WebSocket is undefined
             @log.info "WebSockets not supported on your browser"
 
@@ -61,6 +64,7 @@ class EventsService
         @.ws.addEventListener("message", @.onMessage)
         @.ws.addEventListener("error", @.onError)
         @.ws.addEventListener("close", @.onClose)
+        @.setupHeartBeatMessages()
 
     stopExistingConnection: ->
         if @.ws is undefined
@@ -70,9 +74,40 @@ class EventsService
         @.ws.removeEventListener("close", @.onClose)
         @.ws.removeEventListener("error", @.onError)
         @.ws.removeEventListener("message", @.onMessage)
+        @.stopHeartBeatMessages()
         @.ws.close()
 
         delete @.ws
+
+    setupHeartBeatMessages: ->
+        return if @.heartbeatInterval
+
+        maxMissedHeartbeats =  @config.get("eventsMaxMissedHeartbeats", 5)
+        heartbeatIntervalTime = @config.get("eventsHeartbeatIntervalTime", 5000)
+
+        @.missedHeartbeats = 0
+        @.heartbeatInterval = setInterval(() =>
+            try
+                if @.missedHeartbeats >= maxMissedHeartbeats
+                    throw new Error("Too many missed heartbeats PINGs.")
+
+                @.missedHeartbeats++
+                @.sendMessage({cmd: "ping"})
+                @log.debug("HeartBeat send PING")
+            catch e
+                @log.error("HeartBeat error: " + e.message)
+                stopHeartBeatMessages()
+        , heartbeatIntervalTime)
+
+        @log.debug("HeartBeat enabled")
+
+    stopHeartBeatMessages: ->
+        return if not @.heartbeatInterval
+
+        clearInterval(@.heartbeatInterval)
+        @.heartbeatInterval = null
+
+        @log.debug("HeartBeat disabled")
 
     serialize: (message) ->
         if _.isObject(message)
@@ -138,17 +173,27 @@ class EventsService
         @.sendMessage(message)
 
     onMessage: (event) ->
+        _processPongMessage = (data) =>
+            @.missedHeartbeats--
+            @log.debug("HeartBeat recived PONG")
+
+        _processMesage = (data) =>
+            routingKey = data.routing_key
+
+            if not @.subscriptions[routingKey]?
+                return
+
+            subscription = @.subscriptions[routingKey]
+            subscription.scope.$apply ->
+                subscription.callback(data.data)
+
         @.log.debug "WebSocket message received: #{event.data}"
 
         data = JSON.parse(event.data)
-        routingKey = data.routing_key
-
-        if not @.subscriptions[routingKey]?
-            return
-
-        subscription = @.subscriptions[routingKey]
-        subscription.scope.$apply ->
-            subscription.callback(data.data)
+        if data.cmd = "pong"
+            _processPongMessage(data)
+        else
+            _processMessage(data)
 
     onError: (error) ->
         @log.error("WebSocket error: #{error}")
