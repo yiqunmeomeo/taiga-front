@@ -19,10 +19,11 @@
 
 class AttachmentsController
     @.$inject = [
-        "tgAttachmentsService"
+        "tgAttachmentsService",
+        "$rootScope"
     ]
 
-    constructor: (@attachmentsService) ->
+    constructor: (@attachmentsService, @rootScope) ->
         @.maxFileSize = @attachmentsService.maxFileSize
         @.maxFileSizeFormated = @attachmentsService.maxFileSizeFormated
 
@@ -54,25 +55,24 @@ angular.module("taigaComponents").controller("Attachments", AttachmentsControlle
 class AttachmentsController2
     @.$inject = [
         "tgAttachmentsService",
-        "$tgResources"
+        "$rootScope"
     ]
 
-    constructor: (@attachmentsService, @rs) ->
+    constructor: (@attachmentsService, @rootScope) ->
         @.deprecatedsVisible = false
         @.maxFileSize = @attachmentsService.maxFileSize
         @.maxFileSizeFormated = @attachmentsService.maxFileSizeFormated
+        @.uploadingAttachments = []
 
     loadAttachments: ->
-        urlname = "attachments/#{@.type}"
+        @attachmentsService.list(@.type, @.objId, @.projectId).then (files) =>
+            @.attachments = files.map (file) ->
+                attachment = Immutable.Map()
 
-        # move to new resources
-        return @rs.attachments.list(urlname, @.objId, @.projectId).then (attachments) =>
-            attachments = _.sortBy(attachments, "order")
-            attachments = _.map attachments, (attachment) -> attachment._attrs
-
-            @.attachments = Immutable.fromJS(attachments)
-
-            return attachments
+                return attachment.merge({
+                    editable: false,
+                    file: file
+                })
 
     generate: () ->
         @.deprecatedsCount = @.attachments.count (it) -> it.get('is_deprecated')
@@ -83,20 +83,29 @@ class AttachmentsController2
 
     addAttachment: (file) ->
         if @attachmentsService.validate(file)
+            @.uploadingAttachments.push(file)
+
             promise = @attachmentsService.upload(file, @.objId, @.projectId, @.type)
 
-            promise.then (attachment) =>
-                attachment = Immutable.fromJS(attachment._attrs)
+            promise.then (file) =>
+                @.uploadingAttachments = @.uploadingAttachments.filter (uploading) ->
+                    return uploading.name != file.get('name')
+
+                attachment = Immutable.Map()
+
+                attachment = attachment.set('file', file)
+                attachment = attachment.set('editable', true)
+
                 @.attachments = @.attachments.push(attachment)
+
+                @rootScope.$broadcast("attachment:create")
 
     addAttachments: (files) ->
         _.forEach files, @.addAttachment.bind(this)
 
     deleteAttachment: (toDeleteAttachment) ->
-        @.attachments = @.attachments.filter (attachment) -> attachment != toDeleteAttachment
-
-        if @.onDelete
-            @.onDelete({attachment: toDeleteAttachment})
+        @attachmentsService.delete(@.type, toDeleteAttachment.get('id')).then () ->
+            @.attachments = @.attachments.filter (attachment) -> attachment != toDeleteAttachment
 
     reorderAttachment: (attachment, newIndex) ->
         oldIndex = @.attachments.findIndex (it) -> it == attachment
@@ -107,10 +116,30 @@ class AttachmentsController2
 
         @.attachments = @.attachments.map (x, i) -> x.set('order', i + 1)
 
+    # updateAttachment: (toUpdateAttachment) ->
+    #     index = @.attachments.findIndex (attachment) ->
+    #         return attachment.get('id') == toUpdateAttachment.get('id')
+
+    #     @.attachments = @.attachments.update index, () -> toUpdateAttachment
+
     updateAttachment: (toUpdateAttachment) ->
         index = @.attachments.findIndex (attachment) ->
             return attachment.get('id') == toUpdateAttachment.get('id')
 
-        @.attachments = @.attachments.update index, () -> toUpdateAttachment
+        oldAttachment = @.attachments.get(index)
+
+        patch = taiga.patch(oldAttachment.get('file'), toUpdateAttachment.get('file'))
+
+        onSuccess = =>
+            @.updateCounters()
+            @rootScope.$broadcast("attachment:edit")
+
+        onError = (response) =>
+            $scope.$emit("attachments:size-error") if response.status == 413
+            @confirm.notify("error")
+            return @q.reject()
+
+        return @attachmentsService.patch(toUpdateAttachment.getIn(['file', 'id']), @.type, patch)
+            .then(onSuccess, onError)
 
 angular.module("taigaComponents").controller("Attachments2", AttachmentsController2)

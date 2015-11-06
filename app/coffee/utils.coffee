@@ -195,6 +195,23 @@ _.mixin
 isImage = (name) ->
     return name.match(/\.(jpe?g|png|gif|gifv|webm)/i) != null
 
+patch = (oldImmutable, newImmutable) ->
+    pathObj = {}
+
+    console.log newImmutable.toJS()
+    console.log oldImmutable.toJS()
+
+    newImmutable.forEach (newValue, key) ->
+        if newValue != oldImmutable.get(key)
+            if newValue.toJS
+                pathObj[key] = newValue.toJS()
+            else
+                pathObj[key] = newValue
+
+    console.log pathObj
+
+    return pathObj
+
 taiga = @.taiga
 taiga.nl2br = nl2br
 taiga.bindMethods = bindMethods
@@ -219,3 +236,4 @@ taiga.stripTags = stripTags
 taiga.replaceTags = replaceTags
 taiga.defineImmutableProperty = defineImmutableProperty
 taiga.isImage = isImage
+taiga.patch = patch

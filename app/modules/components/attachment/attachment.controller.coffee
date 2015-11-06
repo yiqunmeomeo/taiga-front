@@ -23,8 +23,6 @@ class AttachmentController
         '$translate'
     ]
 
-    editable: false
-
     constructor: (@attachmentsService, @translate) ->
         @.form = {}
         @.form.description = @.attachment.get('description')
@@ -36,17 +34,23 @@ class AttachmentController
                         })
 
     editMode: (mode) ->
-        @.editable = mode
+        @.attachment = @.attachment.set('editable', mode)
 
     delete: () ->
         @.onDelete({attachment: @.attachment}) if @.onDelete
 
     save: () ->
-        @.editable = false
+        attachment = @.attachment.set('editable', false)
 
-        @.attachment = @.attachment.set('description', @.form.description)
-        @.attachment = @.attachment.set('is_deprecated', @.form.is_deprecated)
+        attachment = attachment.mergeIn(['file'], {
+            'description': @.form.description,
+            'is_deprecated': !!@.form.is_deprecated
+        })
 
-        @.onUpdate({attachment: @.attachment}) if @.onUpdate
+
+        if @.onUpdate
+            @.onUpdate({attachment: attachment}).then (attachment) -> @.attachment = attachment
+        else
+            @.attachment = attachment
 
 angular.module('taigaComponents').controller('Attachment', AttachmentController)

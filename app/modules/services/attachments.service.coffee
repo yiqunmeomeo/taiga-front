@@ -6,7 +6,7 @@ class AttachmentsService
         "$tgConfig",
         "$translate",
         "$q",
-        "$tgResources"
+        "tgResources"
     ]
 
     constructor: (@confirm, @config, @translate, @q, @rs) ->
@@ -17,8 +17,8 @@ class AttachmentsService
 
     sizeError: (file) ->
         message = @translate.instant("ATTACHMENT.ERROR_MAX_SIZE_EXCEEDED", {
-            fileName: file.name,
-            fileSize: sizeFormat(file.size),
+            fileName: file.ge('name'),
+            fileSize: sizeFormat(file.get('size')),
             maxFileSize: @.maxFileSizeFormated
         })
 
@@ -35,23 +35,30 @@ class AttachmentsService
     getMaxFileSize: () ->
         return @config.get("maxUploadFileSize", null)
 
-    delete: (attachment, type) ->
-        return @rs.attachments.delete("attachments/" + type, attachment)
+    list: (type, objId, projectId) ->
+        return @rs.attachments.list(type, objId, projectId).then (attachments) =>
+            return attachments.sortBy (attachment) => attachment.get('order')
 
-    upload: (attachment, objId, projectId, type) ->
-        promise = @rs.attachments.create("attachments/" + type, projectId, objId, attachment)
+    delete: (attachment, type) ->
+        return @rs.attachments.delete(type, attachment.get('id'))
+
+    upload: (file, objId, projectId, type) ->
+        promise = @rs.attachments.create(type, projectId, objId, file)
 
         promise.then null, (data) =>
             if data.status == 413
-                @.sizeError(attachment)
+                @.sizeError(file)
 
                 message = @translate.instant("ATTACHMENT.ERROR_UPLOAD_ATTACHMENT", {
-                            fileName: attachment.name, errorMessage: data.data._error_message})
+                            fileName: file.get('name'), errorMessage: data.data._error_message})
 
                 @confirm.notify("error", message)
 
                 return @q.reject(data)
 
         return promise
+
+    patch: (id, type, patch) ->
+        return @rs.attachments.patch(type, id, patch)
 
 angular.module("taigaCommon").service("tgAttachmentsService", AttachmentsService)
